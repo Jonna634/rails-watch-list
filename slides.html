@@ -1,0 +1,564 @@
+<!-- saved from url=(0088)https://kitt.lewagon.com/camps/1188/lectures/content/lectures/rails/rails-beyond-crud.md -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body cz-shortcut-listen="true"><h2 id="setup">Setup</h2>
+
+  <h3 id="create-a-new-rails-app">Create a new Rails app</h3>
+
+  <p>Let’s create an app with restaurants &amp; reviews:</p>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">cd</span> ~/code/<span class="nv">$GITHUB_USERNAME</span>
+  <span class="nb">rails </span>new rails-beyond-crud <span class="nt">--skip-active-storage</span> <span class="nt">--skip-action-mailbox</span> <span class="nt">--skip-jbuilder</span>
+  <span class="nb">cd </span>rails-beyond-crud
+  </code></pre></div></div>
+
+  <h3 id="add-bootstrap-stylesheet">Add Bootstrap stylesheet</h3>
+
+  <p>Install Bootstrap stylesheet by copy-pasting the link <a href="https://getbootstrap.com/docs/5.1/getting-started/introduction/#css" target="_blank">from the documentation</a>:</p>
+
+  <div class="language-erb highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c">&lt;!-- app/views/layouts/application.html.erb --&gt;</span>
+  <span class="c">&lt;!-- [...] --&gt;</span>
+  <span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">integrity=</span><span class="s">"sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"</span> <span class="na">crossorigin=</span><span class="s">"anonymous"</span><span class="nt">&gt;</span>
+  </code></pre></div></div>
+
+  <h3 id="add-simple-form-12">Add Simple Form 1/2</h3>
+
+  <p><a href="https://github.com/heartcombo/simple_form" target="_blank">Simple Form</a> provides a new form helper to <strong>generate forms with Bootstrap classes</strong> 🎨</p>
+
+  <p>Add this line in your Gemfile</p>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># Gemfile</span>
+  <span class="c1"># [...]</span>
+  <span class="n">gem</span> <span class="s2">"simple_form"</span>
+  </code></pre></div></div>
+
+  <p>And launch these commands in your terminal:</p>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">bundle </span>install
+  <span class="nb">rails </span>generate simple_form:install <span class="nt">--bootstrap</span>
+  </code></pre></div></div>
+
+  <h3 id="add-simple-form-22">Add Simple Form 2/2</h3>
+
+  <p>Now you can use <code>simple_form_for</code> instead of <code>form_with</code> 🎉</p>
+
+  <div class="language-erb highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c">&lt;!-- app/views/restaurants/_form.html.erb --&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">simple_form_for</span><span class="p">(</span><span class="n">restaurant</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="p">.</span><span class="nf">input</span> <span class="ss">:name</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="p">.</span><span class="nf">input</span> <span class="ss">:address</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="p">.</span><span class="nf">input</span> <span class="ss">:rating</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="p">.</span><span class="nf">submit</span> <span class="cp">%&gt;</span>
+  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+  </code></pre></div></div>
+  <!-- .element: class="view fragment" data-fragment-index="1" -->
+
+  <div class="language-html highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nt">&lt;form</span> <span class="na">class=</span><span class="s">"simple_form new_restaurant"</span> <span class="na">id=</span><span class="s">"new_restaurant"</span> <span class="na">novalidate=</span><span class="s">"novalidate"</span> <span class="na">action=</span><span class="s">"/restaurants"</span> <span class="na">accept-charset=</span><span class="s">"UTF-8"</span> <span class="na">method=</span><span class="s">"post"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"hidden"</span> <span class="na">name=</span><span class="s">"authenticity_token"</span> <span class="na">value=</span><span class="s">"6mcCvU7ZazpIBcJTptw/8y4EucmzccFWli7tFUzX6IJEx8wq6PFC7m4rA1Jy+W4YW1hlhYhSOyhZefWtOM5ofQ=="</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"mb-3 string optional restaurant_name"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;label</span> <span class="na">class=</span><span class="s">"string optional"</span> <span class="na">for=</span><span class="s">"restaurant_name"</span><span class="nt">&gt;</span>Name<span class="nt">&lt;/label&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">class=</span><span class="s">"form-control string optional"</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"restaurant[name]"</span> <span class="na">id=</span><span class="s">"restaurant_name"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"mb-3 string optional restaurant_address"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;label</span> <span class="na">class=</span><span class="s">"string optional"</span> <span class="na">for=</span><span class="s">"restaurant_address"</span><span class="nt">&gt;</span>Address<span class="nt">&lt;/label&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">class=</span><span class="s">"form-control string optional"</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"restaurant[address]"</span> <span class="na">id=</span><span class="s">"restaurant_address"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">name=</span><span class="s">"commit"</span> <span class="na">value=</span><span class="s">"Create Restaurant"</span> <span class="na">data-disable-with=</span><span class="s">"Create Restaurant"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;/form&gt;</span>
+  </code></pre></div></div>
+
+  <h3 id="first-commit">First commit</h3>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">git </span>add <span class="nb">.</span>
+  <span class="nb">git </span>commit <span class="nt">-m</span> <span class="s2">"rails new with bootstrap &amp; simple_form"</span>
+  </code></pre></div></div>
+
+  <hr>
+
+  <h2 id="crud">CRUD</h2>
+
+  <p>(Previous lecture)</p>
+
+  <h3 id="7-actions">7 Actions</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># config/routes.rb</span>
+  <span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:restaurants</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+  <!-- .element: class="router" -->
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code>         Prefix  Verb    URI Pattern            Controller#Action
+      restaurants  GET     /restaurants           restaurants#index
+                   POST    /restaurants           restaurants#create
+   new_restaurant  GET     /restaurants/new       restaurants#new
+  edit_restaurant  GET     /restaurants/:id/edit  restaurants#edit
+       restaurant  GET     /restaurants/:id       restaurants#show
+                   PATCH   /restaurants/:id       restaurants#update
+                   DELETE  /restaurants/:id       restaurants#destroy
+  </code></pre></div></div>
+
+  <h3 id="scaffold">Scaffold</h3>
+
+  <p>Only for <strong>demos</strong> not for projects</p>
+
+  <p>You <strong>never</strong> need all of the 7 CRUD actions in real projects</p>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">bundle </span>install
+  <span class="nb">rails </span>g scaffold Restaurant name address rating:integer
+  <span class="nb">rails </span>db:migrate
+  </code></pre></div></div>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">git </span>add <span class="nb">.</span>
+  <span class="nb">git </span>commit <span class="nt">-m</span> <span class="s2">"scaffold restaurants"</span>
+  </code></pre></div></div>
+
+  <h3 id="seed">Seed</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># db/seeds.rb</span>
+  <span class="nb">puts</span> <span class="s2">"Cleaning database..."</span>
+  <span class="no">Restaurant</span><span class="p">.</span><span class="nf">destroy_all</span>
+
+  <span class="nb">puts</span> <span class="s2">"Creating restaurants..."</span>
+  <span class="n">dishoom</span> <span class="o">=</span> <span class="p">{</span><span class="ss">name: </span><span class="s2">"Dishoom"</span><span class="p">,</span> <span class="ss">address: </span><span class="s2">"7 Boundary St, London E2 7JE"</span><span class="p">,</span> <span class="ss">rating: </span><span class="mi">5</span><span class="p">}</span>
+  <span class="n">pizza_east</span> <span class="o">=</span>  <span class="p">{</span><span class="ss">name: </span><span class="s2">"Pizza East"</span><span class="p">,</span> <span class="ss">address: </span><span class="s2">"56A Shoreditch High St, London E1 6PQ"</span><span class="p">,</span> <span class="ss">rating: </span><span class="mi">4</span><span class="p">}</span>
+
+  <span class="p">[</span><span class="n">dishoom</span><span class="p">,</span> <span class="n">pizza_east</span><span class="p">].</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">attributes</span><span class="o">|</span>
+    <span class="n">restaurant</span> <span class="o">=</span> <span class="no">Restaurant</span><span class="p">.</span><span class="nf">create!</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="nb">puts</span> <span class="s2">"Created </span><span class="si">#{</span><span class="n">restaurant</span><span class="p">.</span><span class="nf">name</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+  <span class="nb">puts</span> <span class="s2">"Finished!"</span>
+  </code></pre></div></div>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">rails </span>db:seed
+  </code></pre></div></div>
+
+  <hr>
+
+  <h2 id="beyond-crud">Beyond CRUD</h2>
+
+  <h3 id="all-5-stars-restaurants">All 5-stars restaurants</h3>
+
+  <p>You are not limited to the <strong>seven</strong> RESTful routes given by <code>resources</code></p>
+
+  <p><br></p>
+
+  <p>How to get all 5-stars restaurants?</p>
+
+  <p><br></p>
+
+  <p><code>GET /restaurants/top</code></p>
+
+  <h3 id="route">Route</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># config/routes.rb</span>
+  <span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:restaurants</span> <span class="k">do</span>
+      <span class="n">collection</span> <span class="k">do</span>
+        <span class="n">get</span> <span class="ss">:top</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+  <!-- .element: class="router" -->
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">rails </span>routes | <span class="nb">grep </span>top
+  <span class="c"># top_restaurants  GET  /restaurants/top(.:format)  restaurants#top</span>
+  </code></pre></div></div>
+
+  <h3 id="controller">Controller</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># app/controllers/restaurants_controller.rb</span>
+  <span class="k">class</span> <span class="nc">RestaurantsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+    <span class="k">def</span> <span class="nf">top</span>
+      <span class="vi">@restaurants</span> <span class="o">=</span> <span class="no">Restaurant</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">rating: </span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+  <!-- .element: class="controller" -->
+
+  <h3 id="view">View</h3>
+
+  <div class="language-erb highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c">&lt;!-- app/views/restaurants/top.html.erb --&gt;</span>
+  <span class="nt">&lt;h1&gt;</span>5 Stars Restaurants<span class="nt">&lt;/h1&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"restaurants"</span><span class="nt">&gt;</span>
+    <span class="cp">&lt;%</span> <span class="vi">@restaurants</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">restaurant</span><span class="o">|</span> <span class="cp">%&gt;</span>
+      <span class="cp">&lt;%=</span> <span class="n">render</span> <span class="n">restaurant</span> <span class="cp">%&gt;</span>
+      <span class="nt">&lt;p&gt;</span>
+        <span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s2">"Show this restaurant"</span><span class="p">,</span> <span class="n">restaurant</span> <span class="cp">%&gt;</span>
+      <span class="nt">&lt;/p&gt;</span>
+    <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="view" -->
+
+  <p>DRY: refactor the restaurant list into a <code>_list.html.erb</code> partial</p>
+
+  <div class="language-erb highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c">&lt;!-- app/views/restaurants/top.html.erb --&gt;</span>
+  <span class="nt">&lt;h1&gt;</span>5 Stars Restaurants<span class="nt">&lt;/h1&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">render</span> <span class="s2">"restaurants/list"</span><span class="p">,</span> <span class="ss">restaurants: </span><span class="vi">@restaurants</span> <span class="cp">%&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s2">"Back to all restaurants"</span><span class="p">,</span> <span class="n">restaurants_path</span> <span class="cp">%&gt;</span>
+  </code></pre></div></div>
+
+  <h3 id="one-restaurants-chef">One restaurant’s chef</h3>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">rails </span>generate migration AddChefNameToRestaurants chef_name:string
+  <span class="nb">rails </span>db:migrate
+  </code></pre></div></div>
+  <p><br></p>
+
+  <p>How to get one restaurant’s chef infos?</p>
+
+  <p><br></p>
+
+  <p><code>GET /restaurants/42/chef</code></p>
+
+  <h3 id="route-1">Route</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># config/routes.rb</span>
+  <span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:restaurants</span> <span class="k">do</span>
+      <span class="n">member</span> <span class="k">do</span>
+        <span class="n">get</span> <span class="ss">:chef</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="router" -->
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">rails </span>routes | <span class="nb">grep </span>chef
+  <span class="c"># chef_restaurant  GET  /restaurants/:id/chef(.:format)  restaurants#chef</span>
+  </code></pre></div></div>
+
+  <h3 id="controller-1">Controller</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># app/controllers/restaurants_controller.rb</span>
+  <span class="k">class</span> <span class="nc">RestaurantsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+    <span class="c1"># Add chef to the list of actions below</span>
+    <span class="n">before_action</span> <span class="ss">:set_restaurant</span><span class="p">,</span> <span class="ss">only: </span><span class="sx">%i[show edit update destroy chef]</span>
+
+    <span class="k">def</span> <span class="nf">chef</span>
+      <span class="vi">@chef_name</span> <span class="o">=</span> <span class="vi">@restaurant</span><span class="p">.</span><span class="nf">chef_name</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="controller" -->
+
+  <h3 id="view-1">View</h3>
+
+  <div class="language-erb highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c">&lt;!-- app/views/restaurants/chef.html.erb --&gt;</span>
+  <span class="nt">&lt;h1&gt;</span><span class="cp">&lt;%=</span> <span class="vi">@restaurant</span><span class="p">.</span><span class="nf">name</span> <span class="cp">%&gt;</span>'s Chef<span class="nt">&lt;/h1&gt;</span>
+  <span class="nt">&lt;p&gt;</span><span class="cp">&lt;%=</span> <span class="vi">@chef_name</span> <span class="cp">%&gt;</span><span class="nt">&lt;/p&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s2">"Back to restaurant"</span><span class="p">,</span> <span class="n">restaurant_path</span><span class="p">(</span><span class="vi">@restaurant</span><span class="p">)</span> <span class="cp">%&gt;</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="view" -->
+
+  <hr>
+
+  <h2 id="nested-resources">Nested Resources</h2>
+
+  <h3 id="adding-reviews">Adding reviews</h3>
+
+  <p>We want to let users leave a review about a restaurant, and display them on the restaurant’s page.</p>
+
+  <h3 id="models">Models</h3>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">rails </span>generate model Review content:text restaurant:references
+  <span class="nb">rails </span>db:migrate
+  </code></pre></div></div>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># app/models/restaurant.rb</span>
+  <span class="k">class</span> <span class="nc">Restaurant</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+    <span class="n">has_many</span> <span class="ss">:reviews</span><span class="p">,</span> <span class="ss">dependent: :destroy</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="model" -->
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># app/models/review.rb</span>
+  <span class="k">class</span> <span class="nc">Review</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+    <span class="n">belongs_to</span> <span class="ss">:restaurant</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="model" -->
+
+  <h3 id="new-review">New review</h3>
+
+  <p>How to get the review form?</p>
+
+  <p><br></p>
+
+  <p><code>GET /restaurants/:id/reviews/new</code></p>
+
+  <h3 id="route-2">Route</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># config/routes.rb</span>
+  <span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:restaurants</span> <span class="k">do</span>
+      <span class="n">resources</span> <span class="ss">:reviews</span><span class="p">,</span> <span class="ss">only: </span><span class="p">[</span><span class="ss">:new</span><span class="p">]</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="router" -->
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">rails </span>routes | <span class="nb">grep </span>review
+  <span class="c"># new_restaurant_review GET    /restaurants/:restaurant_id/reviews/new(.:format) reviews#new</span>
+  </code></pre></div></div>
+
+  <h3 id="controller-2">Controller</h3>
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">rails </span>g controller reviews new
+  </code></pre></div></div>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># app/controllers/reviews_controller.rb</span>
+  <span class="k">class</span> <span class="nc">ReviewsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+    <span class="k">def</span> <span class="nf">new</span>
+      <span class="c1"># We need @restaurant in our `simple_form_for`</span>
+      <span class="vi">@restaurant</span> <span class="o">=</span> <span class="no">Restaurant</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:restaurant_id</span><span class="p">])</span>
+      <span class="vi">@review</span> <span class="o">=</span> <span class="no">Review</span><span class="p">.</span><span class="nf">new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="controller" -->
+
+  <h3 id="view-2">View</h3>
+
+  <div class="language-erb highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c">&lt;!-- app/views/reviews/new.html.erb --&gt;</span>
+  <span class="nt">&lt;h1&gt;</span>New review<span class="nt">&lt;/h1&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">simple_form_for</span> <span class="p">[</span><span class="vi">@restaurant</span><span class="p">,</span> <span class="vi">@review</span><span class="p">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="p">.</span><span class="nf">input</span> <span class="ss">:content</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="p">.</span><span class="nf">submit</span> <span class="s2">"Submit review"</span><span class="p">,</span> <span class="ss">class: </span><span class="s2">"btn btn-primary"</span> <span class="cp">%&gt;</span>
+  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="view" -->
+
+  <p>Simple Form, like <code>form_with</code>, needs the 2 objects to build the right request:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Helper</th>
+        <th>HTTP request</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>`simple_form_for @review`</td>
+      <td>POST `reviews_path`</td>
+    </tr>
+    <tr>
+      <td>`simple_form_for [@restaurant, @review]`</td>
+      <td>POST `restaurant_reviews_path`</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <h3 id="create-review">Create review</h3>
+
+  <p>How to post the review form?</p>
+
+  <p><br></p>
+
+  <p><code>POST /restaurants/:id/reviews</code></p>
+
+  <h3 id="route-3">Route</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># config/routes.rb</span>
+  <span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:restaurants</span> <span class="k">do</span>
+      <span class="n">resources</span> <span class="ss">:reviews</span><span class="p">,</span> <span class="ss">only: </span><span class="p">[</span><span class="ss">:new</span><span class="p">,</span> <span class="ss">:create</span><span class="p">]</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="router" -->
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">rails </span>routes | <span class="nb">grep </span>review
+  <span class="c">#    restaurant_reviews POST   /restaurants/:restaurant_id/reviews(.:format)     reviews#create</span>
+  <span class="c"># new_restaurant_review GET    /restaurants/:restaurant_id/reviews/new(.:format) reviews#new</span>
+  </code></pre></div></div>
+
+  <h3 id="controller-3">Controller</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># app/controllers/reviews_controller.rb</span>
+  <span class="k">class</span> <span class="nc">ReviewsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+    <span class="c1"># We need to find the restaurant associated with the review</span>
+    <span class="n">before_action</span> <span class="ss">:set_restaurant</span><span class="p">,</span> <span class="ss">only: </span><span class="sx">%i[new create]</span>
+
+    <span class="k">def</span> <span class="nf">create</span>
+      <span class="vi">@review</span> <span class="o">=</span> <span class="no">Review</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">review_params</span><span class="p">)</span>
+      <span class="vi">@review</span><span class="p">.</span><span class="nf">restaurant</span> <span class="o">=</span> <span class="vi">@restaurant</span>
+      <span class="vi">@review</span><span class="p">.</span><span class="nf">save</span>
+      <span class="n">redirect_to</span> <span class="n">restaurant_path</span><span class="p">(</span><span class="vi">@restaurant</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="kp">private</span>
+
+    <span class="k">def</span> <span class="nf">set_restaurant</span>
+      <span class="vi">@restaurant</span> <span class="o">=</span> <span class="no">Restaurant</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:restaurant_id</span><span class="p">])</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">review_params</span>
+      <span class="n">params</span><span class="p">.</span><span class="nf">require</span><span class="p">(</span><span class="ss">:review</span><span class="p">).</span><span class="nf">permit</span><span class="p">(</span><span class="ss">:content</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="controller" -->
+
+  <h3 id="view-3">View</h3>
+
+  <p>Display the list of reviews in the restaurant’s show:</p>
+
+  <div class="language-erb highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c">&lt;!-- app/views/restaurants/show.html.erb --&gt;</span>
+
+  <span class="nt">&lt;p&gt;&lt;strong&gt;</span>Reviews<span class="nt">&lt;/strong&gt;&lt;/p&gt;</span>
+  <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">"list-group"</span><span class="nt">&gt;</span>
+    <span class="cp">&lt;%</span> <span class="vi">@restaurant</span><span class="p">.</span><span class="nf">reviews</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">review</span><span class="o">|</span> <span class="cp">%&gt;</span>
+      <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"list-group-item"</span><span class="nt">&gt;</span><span class="cp">&lt;%=</span> <span class="n">review</span><span class="p">.</span><span class="nf">content</span> <span class="cp">%&gt;</span><span class="nt">&lt;/li&gt;</span>
+    <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+  <span class="nt">&lt;/ul&gt;</span>
+  <span class="nt">&lt;br&gt;</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="view" -->
+
+  <h3 id="validation-errors">Validation errors</h3>
+
+  <p>What if the review is invalid?</p>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="k">class</span> <span class="nc">Review</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+    <span class="n">belongs_to</span> <span class="ss">:restaurant</span>
+
+    <span class="n">validates</span> <span class="ss">:content</span><span class="p">,</span> <span class="ss">presence: </span><span class="kp">true</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <p>We shouldn’t redirect to the restaurant show</p>
+
+  <h3 id="render-form-with-errors">Render form with errors</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># app/controllers/reviews_controller.rb</span>
+  <span class="c1"># [...]</span>
+
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@review</span> <span class="o">=</span> <span class="no">Review</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">review_params</span><span class="p">)</span>
+    <span class="vi">@review</span><span class="p">.</span><span class="nf">restaurant</span> <span class="o">=</span> <span class="vi">@restaurant</span>
+    <span class="k">if</span> <span class="vi">@review</span><span class="p">.</span><span class="nf">save</span>
+      <span class="n">redirect_to</span> <span class="n">restaurant_path</span><span class="p">(</span><span class="vi">@restaurant</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="n">render</span> <span class="ss">:new</span><span class="p">,</span> <span class="ss">status: :unprocessable_entity</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="controller" -->
+
+  <p><code>status: :unprocessable_entity</code> responds with a 422 <a href="https://guides.rubyonrails.org/layouts_and_rendering.html#the-status-option" target="_blank">HTTP status code</a></p>
+
+  <p><br></p>
+
+  <p><strong>Simple Form</strong> handles the error messages and style automatically 🙌</p>
+
+  <h3 id="destroy-review">Destroy review</h3>
+
+  <p>How to delete a review?</p>
+
+  <p><br></p>
+
+  <p><code>DELETE /reviews/:id</code></p>
+
+  <h3 id="route-4">Route</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># config/routes.rb</span>
+  <span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:restaurants</span> <span class="k">do</span>
+      <span class="n">resources</span> <span class="ss">:reviews</span><span class="p">,</span> <span class="ss">only: </span><span class="p">[</span><span class="ss">:new</span><span class="p">,</span> <span class="ss">:create</span><span class="p">]</span>
+    <span class="k">end</span>
+    <span class="n">resources</span> <span class="ss">:reviews</span><span class="p">,</span> <span class="ss">only: </span><span class="p">[</span><span class="ss">:destroy</span><span class="p">]</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="router" -->
+
+  <div class="language-bash highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="nb">rails </span>routes | <span class="nb">grep </span>destroy
+  <span class="c">#        DELETE /restaurants/:id(.:format) restaurants#destroy</span>
+  <span class="c"># review DELETE /reviews/:id(.:format) reviews#destroy</span>
+  </code></pre></div></div>
+
+  <h3 id="controller-4">Controller</h3>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c1"># app/controllers/reviews_controller.rb</span>
+  <span class="k">class</span> <span class="nc">ReviewsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+    <span class="k">def</span> <span class="nf">destroy</span>
+      <span class="vi">@review</span> <span class="o">=</span> <span class="no">Review</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:id</span><span class="p">])</span>
+      <span class="vi">@review</span><span class="p">.</span><span class="nf">destroy</span>
+      <span class="n">redirect_to</span> <span class="n">restaurant_path</span><span class="p">(</span><span class="vi">@review</span><span class="p">.</span><span class="nf">restaurant</span><span class="p">),</span> <span class="ss">status: :see_other</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="controller" -->
+
+  <p><code>status: :see_other</code> responds with a 303 <a href="https://guides.rubyonrails.org/layouts_and_rendering.html#the-status-option" target="_blank">HTTP status code</a></p>
+
+  <h3 id="view-4">View</h3>
+
+  <div class="language-erb highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="c">&lt;!-- app/views/restaurants/show.html.erb --&gt;</span>
+  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"list-group-item"</span><span class="nt">&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">review</span><span class="p">.</span><span class="nf">content</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s2">"Delete"</span><span class="p">,</span>
+      <span class="n">review_path</span><span class="p">(</span><span class="n">review</span><span class="p">),</span>
+      <span class="ss">data: </span><span class="p">{</span><span class="ss">turbo_method: :delete</span><span class="p">,</span> <span class="ss">turbo_confirm: </span><span class="s2">"Are you sure?"</span><span class="p">}</span>
+    <span class="cp">%&gt;</span>
+  <span class="nt">&lt;/li&gt;</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="view" -->
+
+  <h3 id="shallow-nesting">Shallow Nesting</h3>
+
+  <p>Assuming your project has a 1:N relationship between <code>restaurants</code> and <code>reviews</code>, you would have:</p>
+
+  <div class="language-ruby highlighter-rouge"><div class="highlight github"><pre class="highlight github"><code><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:restaurants</span> <span class="k">do</span>
+      <span class="n">resources</span> <span class="ss">:reviews</span><span class="p">,</span> <span class="ss">only: </span><span class="p">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:new</span><span class="p">,</span> <span class="ss">:create</span><span class="p">]</span>
+    <span class="k">end</span>
+    <span class="n">resources</span> <span class="ss">:reviews</span><span class="p">,</span> <span class="ss">only: </span><span class="p">[</span><span class="ss">:show</span><span class="p">,</span> <span class="ss">:edit</span><span class="p">,</span> <span class="ss">:update</span><span class="p">,</span> <span class="ss">:destroy</span><span class="p">]</span>
+  <span class="k">end</span>
+  </code></pre></div></div>
+
+  <!-- .element: class="router" -->
+
+  <p>Avoid deep levels of nesting</p>
+
+  <p><br></p>
+
+  <p><strong>Rules of thumb</strong>:</p>
+
+  <ul>
+    <li>Nest <em>collection</em> actions, don’t nest <em>member</em> actions</li>
+    <li>Don’t nest an action if you can access the resource with its id</li>
+  </ul>
+
+  <p><br></p>
+
+  <p><a href="https://guides.rubyonrails.org/routing.html#shallow-nesting" target="_blank">Rails Routing from the Outside In</a></p>
+
+  <hr>
+
+  <h2 id="extra-resources">Extra Resources</h2>
+
+  <p>The full source code of the lecture is <a href="https://github.com/lewagon/rails-beyond-crud" target="_blank">available on GitHub</a></p>
+
+  <hr>
+
+  <h2 id="your-turn">Your turn</h2>
+
+  <p>Let’s build a CRUD app with two related models 🚀</p>
+  <daily-companion-app><template shadowrootmode="open"><div id="daily-companion-wrapper"></div></template></daily-companion-app></body></html>
