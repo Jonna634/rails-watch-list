@@ -1,8 +1,13 @@
-<ol>
-<% @lists.each do |list| %>
-<li>
-<%= link_to "#{list.name}", "lists/#{list.id}" %>
-</li>
-<% end %>
-</ol>
-<button type="button" class="btn btn-primary">New List<%= link_to "New list", "lists/new" %></button>
+<div class="card-category" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('<%= image_path "Background.png" %>')">
+  <h1><strong>My Lists</strong></h1>
+  <h1><strong></strong></h1>
+  <div><%= link_to "New list", "lists/new", class:"btn btn-primary" %></div>
+</div>
+
+<div class="cards">
+  <% @lists.each do |list| %>
+    <div class="card-category" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(<%= cl_image_path list.photo.key %>)">
+      <h2 class="card-text"><%= link_to "#{list.name}", "lists/#{list.id}" %></h2>
+    </div>
+  <% end %>
+</div>
